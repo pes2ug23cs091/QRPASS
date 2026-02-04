@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 0.3rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  --color-background: hsl(220 15% 97%);
+  --color-foreground: hsl(220 10% 10%);
+
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(220 10% 10%);
+
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(220 10% 10%);
+
+  --color-primary: hsl(220 90% 56%);
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  --color-secondary: hsl(220 15% 90%);
+  --color-secondary-foreground: hsl(220 10% 10%);
+
+  --color-muted: hsl(220 15% 94%);
+  --color-muted-foreground: hsl(220 10% 45%);
+
+  --color-accent: hsl(220 15% 94%);
+  --color-accent-foreground: hsl(220 10% 10%);
+
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+
+  --color-border: hsl(220 15% 90%);
+  --color-input: hsl(220 15% 90%);
+  --color-ring: hsl(220 90% 56%);
+
+  --color-chart-1: hsl(220 90% 56%);
+  --color-chart-2: hsl(160 84% 39%);
+  --color-chart-3: hsl(30 80% 55%);
+  --color-chart-4: hsl(280 67% 55%);
+  --color-chart-5: hsl(340 75% 55%);
+  
+  --color-sidebar: hsl(220 20% 12%);
+  --color-sidebar-foreground: hsl(220 10% 90%);
+  --color-sidebar-primary: hsl(220 90% 56%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent: hsl(220 20% 20%);
+  --color-sidebar-accent-foreground: hsl(220 10% 90%);
+  --color-sidebar-border: hsl(220 20% 20%);
+  --color-sidebar-ring: hsl(220 90% 56%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
