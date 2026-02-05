@@ -165,10 +165,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const { method } = req;
-  // Get path from query parameter (set by Vercel rewrite) or from URL
-  const urlObj = new URL(req.url || "", `http://${req.headers.host}`);
-  const queryPath = urlObj.searchParams.get("path");
-  const path = queryPath ? `/api/${queryPath}` : (req.url?.replace(/\?.*$/, "") || "");
+  // Parse the original URL to get the path
+  let path = req.url?.split("?")[0] || "";
+  // Ensure path starts with /api
+  if (!path.startsWith("/api")) {
+    path = "/api" + path;
+  }
   
   // Debug logging
   console.log(`[API] ${method} ${path}`);
