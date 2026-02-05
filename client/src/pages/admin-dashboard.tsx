@@ -15,9 +15,19 @@ import { Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
 import * as XLSX from "xlsx";
 
 export default function AdminDashboard() {
-  const { events, users, registrations, createEvent, scanQRCode } = useApp();
+  const { events, users, registrations, createEvent, scanQRCode, refreshRegistrations, refreshUsers, refreshEvents } = useApp();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("events");
+
+  // Auto-refresh registrations and users every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshRegistrations(true); // true = admin
+      refreshUsers();
+      refreshEvents();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [refreshRegistrations, refreshUsers, refreshEvents]);
 
   // Event Creation State
   const [showCreateEvent, setShowCreateEvent] = useState(false);
@@ -414,18 +424,25 @@ export default function AdminDashboard() {
               </div>
 
               {scanResult && (
-                <div className={`p-4 rounded-lg border ${scanResult.success ? "bg-green-50 border-green-200 text-green-800" : "bg-red-50 border-red-200 text-red-800"}`}>
-                  <div className="flex items-center gap-2 font-bold mb-1">
-                    {scanResult.success ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+                <div className={`p-6 rounded-lg border-2 ${scanResult.success ? "bg-green-50 border-green-400 text-green-800" : "bg-red-50 border-red-400 text-red-800"}`}>
+                  <div className="flex items-center gap-2 font-bold text-xl mb-2">
+                    {scanResult.success ? <CheckCircle className="h-6 w-6" /> : <XCircle className="h-6 w-6" />}
                     {scanResult.success ? "ACCESS GRANTED" : "ACCESS DENIED"}
                   </div>
-                  <p>{scanResult.message}</p>
                   {scanResult.registration && (
-                     <div className="mt-2 text-sm opacity-90">
-                       User: {users.find(u => u.id === scanResult.registration.userId)?.name} <br/>
-                       Event: {events.find(e => e.id === scanResult.registration.eventId)?.title}
+                     <div className="mt-3 space-y-1">
+                       <p className="text-lg font-semibold">
+                         {scanResult.registration.userId?.name || users.find(u => u.id === scanResult.registration.userId)?.name || "Unknown User"}
+                       </p>
+                       <p className="text-md">
+                         Event: {scanResult.registration.eventId?.title || events.find(e => e.id === scanResult.registration.eventId)?.title || "Unknown Event"}
+                       </p>
+                       <p className="text-sm opacity-75 mt-2">
+                         {scanResult.success ? "✓ Attendance marked successfully" : scanResult.message}
+                       </p>
                      </div>
                   )}
+                  {!scanResult.registration && <p>{scanResult.message}</p>}
                 </div>
               )}
             </CardContent>

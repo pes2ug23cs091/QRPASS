@@ -68,7 +68,8 @@ interface AppContextType {
   updateRegistrationStatus: (regId: string, status: "attended") => void;
   markNotificationRead: (id: string) => Promise<void>;
   refreshEvents: () => Promise<void>;
-  refreshRegistrations: () => Promise<void>;
+  refreshRegistrations: (isAdmin?: boolean) => Promise<void>;
+  refreshUsers: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -322,7 +323,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       user, users, events, registrations, notifications, isLoading,
       login, logout, registerUser, createEvent, registerForEvent, 
       cancelRegistration, scanQRCode, updateRegistrationStatus, markNotificationRead,
-      refreshEvents, refreshRegistrations
+      refreshEvents, refreshRegistrations, refreshUsers
     }}>
       {children}
     </AppContext.Provider>
