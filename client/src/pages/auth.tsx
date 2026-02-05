@@ -27,35 +27,32 @@ export default function AuthPage() {
   const [regDept, setRegDept] = useState("");
   const [regRole, setRegRole] = useState<"user" | "admin">("user");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      const success = login(loginUsername, loginRole, loginPassword);
-      setIsLoading(false);
-      if (success) {
-        setLocation(loginRole === "admin" ? "/admin" : "/dashboard");
-      }
-    }, 800);
+    const success = await login(loginUsername, loginRole, loginPassword);
+    setIsLoading(false);
+    if (success) {
+      setLocation(loginRole === "admin" ? "/admin" : "/dashboard");
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      registerUser({
-        username: regUsername,
-        name: regName,
-        email: regEmail,
-        mobile: regMobile,
-        department: regDept,
-        role: regRole,
-        password: regPassword,
-      });
-      setIsLoading(false);
-      // Automatically switch to login tab logic if needed
-      // Here we just stay on register tab, user can switch manually or we could switch tab state
-    }, 800);
+    const success = await registerUser({
+      username: regUsername,
+      name: regName,
+      email: regEmail,
+      mobile: regMobile,
+      department: regDept,
+      role: regRole,
+      password: regPassword,
+    });
+    setIsLoading(false);
+    if (success) {
+      setLocation(regRole === "admin" ? "/admin" : "/dashboard");
+    }
   };
 
   return (

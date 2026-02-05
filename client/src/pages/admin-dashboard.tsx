@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useApp } from "@/lib/store";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ import * as XLSX from "xlsx";
 
 export default function AdminDashboard() {
   const { events, users, registrations, createEvent, scanQRCode } = useApp();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("events");
 
   // Event Creation State
@@ -57,6 +59,8 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
+    let isProcessing = false;
+    
     if (isScanning) {
       const html5QrCode = new Html5Qrcode("reader");
       scannerRef.current = html5QrCode;
@@ -66,13 +70,30 @@ export default function AdminDashboard() {
       html5QrCode.start(
         { facingMode: "environment" }, 
         config,
-        (decodedText) => {
+        async (decodedText) => {
+           // Prevent multiple scans while processing
+           if (isProcessing) return;
+           isProcessing = true;
+           
            console.log(`Scan result: ${decodedText}`);
-           const result = scanQRCode(decodedText);
+           
+           // Stop camera immediately after detecting QR
+           try {
+             await html5QrCode.stop();
+             scannerRef.current = null;
+           } catch (e) {
+             console.error("Error stopping scanner:", e);
+           }
+           
+           // Process the scan
+           const result = await scanQRCode(decodedText);
+           console.log("Scan API result:", result);
+           
            setScanResult(result);
+           setIsScanning(false);
         },
         (errorMessage) => {
-           // Error callback
+           // Error callback - QR not found in frame (normal)
         }
       ).catch(err => {
          console.error("Error starting scanner", err);
