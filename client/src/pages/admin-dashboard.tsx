@@ -123,7 +123,7 @@ export default function AdminDashboard() {
     const eventRegs = registrations.filter(r => r.eventId === eventId);
     
     const data = eventRegs.map(reg => {
-      const user = users.find(u => u.id === reg.userId);
+      const user = users.find(u => String(u.id) === String(reg.userId));
       return {
         "Event": event?.title,
         "Name": user?.name,
@@ -146,8 +146,16 @@ export default function AdminDashboard() {
   // Get selected event details
   const selectedEvent = events.find(e => e.id === selectedEventId);
   
-  // Get registrations for selected event
-  const eventRegistrations = registrations.filter(r => r.eventId === selectedEventId);
+  // Get registrations for selected event - handle both string and object eventId formats
+  const eventRegistrations = registrations.filter(r => {
+    const regEventId = typeof r.eventId === 'object' ? (r.eventId as any)?._id || (r.eventId as any)?.id : r.eventId;
+    return regEventId === selectedEventId || String(regEventId) === String(selectedEventId);
+  });
+
+  // Debug logging
+  console.log("All registrations:", registrations);
+  console.log("Selected Event ID:", selectedEventId);
+  console.log("Filtered registrations:", eventRegistrations);
 
   // Filtered Events
   const filteredEvents = events.filter(e => 
@@ -231,31 +239,30 @@ export default function AdminDashboard() {
                           </TableRow>
                         ) : (
                           eventRegistrations.map(reg => {
-                            const user = users.find(u => u.id === reg.userId);
-                            if (!user) return null;
+                            const user = users.find(u => String(u.id) === String(reg.userId));
                             return (
                               <TableRow key={reg.id}>
                                 <TableCell>
                                   <div className="flex flex-col">
                                     <span className="font-medium flex items-center gap-2">
-                                       <User className="h-3 w-3 text-muted-foreground" /> {user.name}
+                                       <User className="h-3 w-3 text-muted-foreground" /> {user?.name || "Unknown User"}
                                     </span>
-                                    <span className="text-xs text-muted-foreground pl-5">@{user.username}</span>
+                                    <span className="text-xs text-muted-foreground pl-5">@{user?.username || "unknown"}</span>
                                   </div>
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex flex-col text-sm space-y-1">
                                     <span className="flex items-center gap-2">
-                                       <Mail className="h-3 w-3 text-muted-foreground" /> {user.email}
+                                       <Mail className="h-3 w-3 text-muted-foreground" /> {user?.email || "N/A"}
                                     </span>
                                     <span className="flex items-center gap-2">
-                                       <Smartphone className="h-3 w-3 text-muted-foreground" /> {user.mobile}
+                                       <Smartphone className="h-3 w-3 text-muted-foreground" /> {user?.mobile || "N/A"}
                                     </span>
                                   </div>
                                 </TableCell>
-                                <TableCell>{user.department}</TableCell>
+                                <TableCell>{user?.department || "N/A"}</TableCell>
                                 <TableCell>
-                                  <Badge variant="outline" className="text-xs">{user.role}</Badge>
+                                  <Badge variant="outline" className="text-xs">{user?.role || "user"}</Badge>
                                 </TableCell>
                                 <TableCell>
                                   <Badge 
