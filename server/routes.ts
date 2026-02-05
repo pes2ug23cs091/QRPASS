@@ -168,7 +168,7 @@ export async function registerRoutes(
       });
 
       res.status(201).json({
-        id: event._id,
+        id: event._id.toString(),
         title: event.title,
         date: event.date,
         location: event.location,
@@ -190,7 +190,7 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Event not found" });
       }
       res.json({
-        id: event._id,
+        id: event._id.toString(),
         title: event.title,
         date: event.date,
         location: event.location,

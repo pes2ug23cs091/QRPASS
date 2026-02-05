@@ -119,8 +119,8 @@ export default function AdminDashboard() {
   }, [isScanning, scanQRCode]);
 
   const handleExportExcel = (eventId: string) => {
-    const event = events.find(e => e.id === eventId);
-    const eventRegs = registrations.filter(r => r.eventId === eventId);
+    const event = events.find(e => String(e.id) === String(eventId));
+    const eventRegs = registrations.filter(r => String(r.eventId) === String(eventId));
     
     const data = eventRegs.map(reg => {
       const user = users.find(u => String(u.id) === String(reg.userId));
@@ -144,7 +144,7 @@ export default function AdminDashboard() {
   };
 
   // Get selected event details
-  const selectedEvent = events.find(e => e.id === selectedEventId);
+  const selectedEvent = events.find(e => String(e.id) === String(selectedEventId));
   
   // Get registrations for selected event - handle both string and object eventId formats
   const eventRegistrations = registrations.filter(r => {
@@ -386,7 +386,7 @@ export default function AdminDashboard() {
                   <div className="flex justify-between items-center text-sm mt-auto">
                      <div className="flex items-center gap-2 text-muted-foreground">
                         <Users className="h-4 w-4" />
-                        <span>{registrations.filter(r => r.eventId === event.id).length} / {event.capacity || "∞"}</span>
+                        <span>{registrations.filter(r => String(r.eventId) === String(event.id)).length} / {event.capacity || "∞"}</span>
                      </div>
                     <Badge variant={event.status === "active" ? "default" : "outline"}>{event.status}</Badge>
                   </div>
