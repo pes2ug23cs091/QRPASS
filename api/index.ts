@@ -1,7 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { connectDB } from "./_db";
 
 type VercelRequest = IncomingMessage & { 
   body?: any; 
@@ -14,6 +13,30 @@ type VercelResponse = ServerResponse & {
   setHeader: (name: string, value: string) => VercelResponse;
   end: () => VercelResponse;
 };
+
+// ============ DATABASE CONNECTION ============
+let isConnected = false;
+
+async function connectDB(): Promise<void> {
+  if (isConnected && mongoose.connection.readyState === 1) {
+    return;
+  }
+
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error("MONGODB_URI is not defined in environment variables");
+  }
+
+  try {
+    mongoose.set("bufferCommands", false);
+    await mongoose.connect(uri);
+    isConnected = true;
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error;
+  }
+}
 
 // ============ MODELS ============
 import bcrypt from "bcryptjs";
