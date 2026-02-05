@@ -160,11 +160,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     await connectDB();
   } catch (error) {
+    console.error("DB Connection Error:", error);
     return res.status(500).json({ message: "Database connection failed" });
   }
 
-  const { url, method } = req;
-  const path = url?.replace(/\?.*$/, "") || "";
+  const { method } = req;
+  // Get path from query parameter (set by Vercel rewrite) or from URL
+  const urlObj = new URL(req.url || "", `http://${req.headers.host}`);
+  const queryPath = urlObj.searchParams.get("path");
+  const path = queryPath ? `/api/${queryPath}` : (req.url?.replace(/\?.*$/, "") || "");
+  
+  // Debug logging
+  console.log(`[API] ${method} ${path}`);
 
   try {
     // ============ AUTH ROUTES ============
