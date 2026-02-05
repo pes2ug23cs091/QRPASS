@@ -137,7 +137,7 @@ export async function registerRoutes(
     try {
       const events = await Event.find().sort({ date: 1 });
       res.json(events.map(e => ({
-        id: e._id,
+        id: e._id.toString(),
         title: e.title,
         date: e.date,
         location: e.location,
@@ -223,9 +223,9 @@ export async function registerRoutes(
       const registrations = await Registration.find({ userId: req.user!._id })
         .populate("eventId");
       res.json(registrations.map(r => ({
-        id: r._id,
-        userId: r.userId,
-        eventId: r.eventId,
+        id: r._id.toString(),
+        userId: r.userId.toString(),
+        eventId: (r.eventId as any)?._id?.toString() || r.eventId.toString(),
         status: r.status,
         registeredAt: r.registeredAt,
         scannedAt: r.scannedAt,
@@ -242,9 +242,9 @@ export async function registerRoutes(
     try {
       const registrations = await Registration.find();
       res.json(registrations.map(r => ({
-        id: r._id,
-        userId: r.userId,
-        eventId: r.eventId,
+        id: r._id.toString(),
+        userId: r.userId.toString(),
+        eventId: r.eventId.toString(),
         status: r.status,
         registeredAt: r.registeredAt,
         scannedAt: r.scannedAt,
@@ -404,7 +404,7 @@ export async function registerRoutes(
     try {
       const users = await User.find().select("-password");
       res.json(users.map(u => ({
-        id: u._id,
+        id: u._id.toString(),
         username: u.username,
         name: u.name,
         email: u.email,
